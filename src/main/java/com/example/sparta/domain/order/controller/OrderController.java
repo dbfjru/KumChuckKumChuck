@@ -4,6 +4,7 @@ import com.example.sparta.domain.order.dto.CreateOrderRequestDto;
 import com.example.sparta.domain.order.dto.ModifyOrderRequestDto;
 import com.example.sparta.domain.order.dto.OrderResponseDto;
 import com.example.sparta.domain.order.service.OrderServiceImpl;
+import com.example.sparta.global.aop.MyLogging;
 import com.example.sparta.global.dto.ResponseDto;
 import com.example.sparta.global.impl.UserDetailsImpl;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/orders")
+@MyLogging
 public class OrderController {
 
   private final OrderServiceImpl orderServiceImpl;

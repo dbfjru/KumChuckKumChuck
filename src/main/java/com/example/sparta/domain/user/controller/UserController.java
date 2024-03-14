@@ -7,6 +7,7 @@ import com.example.sparta.domain.user.dto.UserProfileUpdateRequestDto;
 import com.example.sparta.domain.user.dto.UserSignupRequestDto;
 import com.example.sparta.domain.user.service.KakaoUserServiceImpl;
 import com.example.sparta.domain.user.service.UserServiceImpl;
+import com.example.sparta.global.aop.MyLogging;
 import com.example.sparta.global.dto.ResponseDto;
 import com.example.sparta.global.impl.UserDetailsImpl;
 import com.example.sparta.global.jwt.JwtUtil;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/users")
+@MyLogging
 public class UserController {
 
   //Service 주입받기
