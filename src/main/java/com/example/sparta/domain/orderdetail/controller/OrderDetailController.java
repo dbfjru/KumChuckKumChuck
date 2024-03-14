@@ -5,6 +5,7 @@ import com.example.sparta.domain.orderdetail.dto.OrderDetailRequestDto;
 import com.example.sparta.domain.orderdetail.dto.OrderDetailResponseDto;
 import com.example.sparta.domain.orderdetail.service.OrderDetailServiceImpl;
 import com.example.sparta.global.aop.MyLogging;
+import com.example.sparta.global.aop.MyPerfMeasure;
 import com.example.sparta.global.dto.ResponseDto;
 import com.example.sparta.global.impl.UserDetailsImpl;
 import java.net.URI;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @MyLogging
+@MyPerfMeasure
 public class OrderDetailController {
 
   private final OrderDetailServiceImpl orderDetailServiceImpl;

@@ -4,6 +4,7 @@ import com.example.sparta.domain.review.dto.ReviewRequestDto;
 import com.example.sparta.domain.review.dto.ReviewResponseDto;
 import com.example.sparta.domain.review.service.ReviewServiceImpl;
 import com.example.sparta.global.aop.MyLogging;
+import com.example.sparta.global.aop.MyPerfMeasure;
 import com.example.sparta.global.dto.ResponseDto;
 import com.example.sparta.global.impl.UserDetailsImpl;
 import java.util.List;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/reviews")
 @MyLogging
+@MyPerfMeasure
 public class ReviewController {
 
   private final ReviewServiceImpl reviewServiceImpl;

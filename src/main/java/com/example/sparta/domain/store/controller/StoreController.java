@@ -6,6 +6,7 @@ import com.example.sparta.domain.store.dto.StoreRequestDto;
 import com.example.sparta.domain.store.dto.StoreResponseDto;
 import com.example.sparta.domain.store.service.StoreServiceImpl;
 import com.example.sparta.global.aop.MyLogging;
+import com.example.sparta.global.aop.MyPerfMeasure;
 import com.example.sparta.global.dto.ResponseDto;
 import com.example.sparta.global.impl.UserDetailsImpl;
 import java.util.List;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 @RequestMapping("/stores")
 @MyLogging
+@MyPerfMeasure
 public class StoreController {
 
   private final StoreServiceImpl storeServiceImpl;
