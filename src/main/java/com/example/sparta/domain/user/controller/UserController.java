@@ -6,7 +6,7 @@ import com.example.sparta.domain.user.dto.UserPasswordUpdateRequestDto;
 import com.example.sparta.domain.user.dto.UserProfileUpdateRequestDto;
 import com.example.sparta.domain.user.dto.UserSignupRequestDto;
 import com.example.sparta.domain.user.service.KakaoUserService;
-import com.example.sparta.domain.user.service.UserService;
+import com.example.sparta.domain.user.service.UserServiceImpl;
 import com.example.sparta.global.dto.ResponseDto;
 import com.example.sparta.global.impl.UserDetailsImpl;
 import com.example.sparta.global.jwt.JwtUtil;
@@ -32,102 +32,102 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/users")
 public class UserController {
 
-    //Service 주입받기
-    private final UserService userService;
-    
-    //JwtUtil 주입받기
-    private final JwtUtil jwtUtil;
-    private final KakaoUserService kakaoUserService;
+  //Service 주입받기
+  private final UserServiceImpl userServiceImpl;
 
-    // 회원 가입 하기
-    @PostMapping("/signup")
-    @ResponseBody
-    public ResponseEntity<ResponseDto<Void>> userSignup(
-        @Valid @RequestBody UserSignupRequestDto userSignupRequestDto) {
+  //JwtUtil 주입받기
+  private final JwtUtil jwtUtil;
+  private final KakaoUserService kakaoUserService;
 
-        userService.userSignup(userSignupRequestDto);
+  // 회원 가입 하기
+  @PostMapping("/signup")
+  @ResponseBody
+  public ResponseEntity<ResponseDto<Void>> userSignup(
+      @Valid @RequestBody UserSignupRequestDto userSignupRequestDto) {
 
-        return ResponseEntity.status(201).body(ResponseDto.
-            <Void>builder()
-            .statusCode(HttpStatus.CREATED.value())
-            .data(null)
-            .build()
-        );
-    }
+    userServiceImpl.userSignup(userSignupRequestDto);
 
-    // 로그인 하기
-    @PostMapping("/login")
-    @ResponseBody
-    public ResponseEntity<ResponseDto<Void>> userLogin(
-        @RequestBody UserLoginRequestDto userLoginRequestDto,
-        HttpServletResponse httpServletResponse) {
+    return ResponseEntity.status(201).body(ResponseDto.
+        <Void>builder()
+        .statusCode(HttpStatus.CREATED.value())
+        .data(null)
+        .build()
+    );
+  }
 
-        userService.userLogin(userLoginRequestDto, httpServletResponse);
+  // 로그인 하기
+  @PostMapping("/login")
+  @ResponseBody
+  public ResponseEntity<ResponseDto<Void>> userLogin(
+      @RequestBody UserLoginRequestDto userLoginRequestDto,
+      HttpServletResponse httpServletResponse) {
 
-        return ResponseEntity.status(200).body(ResponseDto.<Void>builder()
-            .statusCode(HttpStatus.OK.value())
-            .data(null)
-            .build()
-        );
-    }
+    userServiceImpl.userLogin(userLoginRequestDto, httpServletResponse);
+
+    return ResponseEntity.status(200).body(ResponseDto.<Void>builder()
+        .statusCode(HttpStatus.OK.value())
+        .data(null)
+        .build()
+    );
+  }
 
 
-    //로그아웃 하기
-    @PostMapping("/logout")
-    @ResponseBody
-    public ResponseEntity<ResponseDto<Void>> userLogout(HttpServletResponse httpServletResponse) {
+  //로그아웃 하기
+  @PostMapping("/logout")
+  @ResponseBody
+  public ResponseEntity<ResponseDto<Void>> userLogout(HttpServletResponse httpServletResponse) {
 
-        userService.userLogout(httpServletResponse);
+    userServiceImpl.userLogout(httpServletResponse);
 
-        return ResponseEntity.status(200).body(ResponseDto.<Void>builder()
-            .statusCode(HttpStatus.OK.value())
-            .data(null)
-            .build()
-        );
-    }
+    return ResponseEntity.status(200).body(ResponseDto.<Void>builder()
+        .statusCode(HttpStatus.OK.value())
+        .data(null)
+        .build()
+    );
+  }
 
-    //유저 정보 수정하기 (이름, 주소)
-    @PatchMapping
-    @ResponseBody
-    public ResponseEntity<ResponseDto<Void>> userProfileUpdate(
-        @RequestBody UserProfileUpdateRequestDto userProfileUpdateRequestDto,
-        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+  //유저 정보 수정하기 (이름, 주소)
+  @PatchMapping
+  @ResponseBody
+  public ResponseEntity<ResponseDto<Void>> userProfileUpdate(
+      @RequestBody UserProfileUpdateRequestDto userProfileUpdateRequestDto,
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        userService.userProfileUpdate(userProfileUpdateRequestDto, userDetails.getUser());
+    userServiceImpl.userProfileUpdate(userProfileUpdateRequestDto, userDetails.getUser());
 
-        return ResponseEntity.status(200).body(ResponseDto.<Void>builder()
-            .statusCode(HttpStatus.OK.value())
-            .data(null)
-            .build()
-        );
-    }
+    return ResponseEntity.status(200).body(ResponseDto.<Void>builder()
+        .statusCode(HttpStatus.OK.value())
+        .data(null)
+        .build()
+    );
+  }
 
-    //유저 정보 수정하기 (비밀번호)
-    @PatchMapping("/password")
-    @ResponseBody
-    public ResponseEntity<ResponseDto<Void>> userPasswordUpdate(
-        @RequestBody UserPasswordUpdateRequestDto userPasswordUpdateRequestDto,
-        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+  //유저 정보 수정하기 (비밀번호)
+  @PatchMapping("/password")
+  @ResponseBody
+  public ResponseEntity<ResponseDto<Void>> userPasswordUpdate(
+      @RequestBody UserPasswordUpdateRequestDto userPasswordUpdateRequestDto,
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        userService.userPasswordUpdate(userPasswordUpdateRequestDto, userDetails.getUser());
+    userServiceImpl.userPasswordUpdate(userPasswordUpdateRequestDto, userDetails.getUser());
 
-        return ResponseEntity.status(200).body(ResponseDto.<Void>builder()
-            .statusCode(HttpStatus.OK.value())
-            .data(null)
-            .build()
-        );
-    }
+    return ResponseEntity.status(200).body(ResponseDto.<Void>builder()
+        .statusCode(HttpStatus.OK.value())
+        .data(null)
+        .build()
+    );
+  }
 
-    // 카카오 로그인
-    @GetMapping("/kakao")
-    public String kakaoLogin(@RequestParam String code, HttpServletResponse httpServletResponse)
-        throws JsonProcessingException {
+  // 카카오 로그인
+  @GetMapping("/kakao")
+  public String kakaoLogin(@RequestParam String code, HttpServletResponse httpServletResponse)
+      throws JsonProcessingException {
 
-        String token = kakaoUserService.kakaoLogin(code);   // jwt 토큰을 쿠키에 넣어주는 작업 해서 response 에 넣어줌
-        Cookie cookie = new Cookie(jwtUtil.AUTHORIZATION_HEADER, token);
-        cookie.setPath("/");
-        httpServletResponse.addCookie(cookie);
+    String token = kakaoUserService.kakaoLogin(code);   // jwt 토큰을 쿠키에 넣어주는 작업 해서 response 에 넣어줌
+    Cookie cookie = new Cookie(jwtUtil.AUTHORIZATION_HEADER, token);
+    cookie.setPath("/");
+    httpServletResponse.addCookie(cookie);
 
-        return "redirect:/";
-    }
+    return "redirect:/";
+  }
 }

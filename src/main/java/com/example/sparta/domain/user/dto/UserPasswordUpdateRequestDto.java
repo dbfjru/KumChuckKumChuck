@@ -12,16 +12,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserPasswordUpdateRequestDto {
 
-    @NotBlank
-    private String password;
+  @NotBlank
+  private String password;
 
-    @NotBlank
-    @Pattern(regexp = "^[a-zA-Z0-9]{8,15}$")
-    private String newpassword;
+  @NotBlank
+  @Pattern(regexp = "^[a-zA-Z0-9]{8,15}$")
+  private String newPassword;
 
-    @NotBlank
-    @Pattern(regexp = "^[a-zA-Z0-9]{8,15}$")
-    private String checkpassword;
+  @NotBlank
+  @Pattern(regexp = "^[a-zA-Z0-9]{8,15}$")
+  private String checkPassword;
 
 
 }
