@@ -3,7 +3,7 @@ package com.example.sparta.domain.order.controller;
 import com.example.sparta.domain.order.dto.CreateOrderRequestDto;
 import com.example.sparta.domain.order.dto.ModifyOrderRequestDto;
 import com.example.sparta.domain.order.dto.OrderResponseDto;
-import com.example.sparta.domain.order.service.OrderService;
+import com.example.sparta.domain.order.service.OrderServiceImpl;
 import com.example.sparta.global.dto.ResponseDto;
 import com.example.sparta.global.impl.UserDetailsImpl;
 import java.util.List;
@@ -25,82 +25,82 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/orders")
 public class OrderController {
 
-    private final OrderService orderService;
+  private final OrderServiceImpl orderServiceImpl;
 
-    @PostMapping
-    public ResponseEntity<ResponseDto<OrderResponseDto>> createOrder(
-        @RequestBody CreateOrderRequestDto requestDto,
-        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+  @PostMapping
+  public ResponseEntity<ResponseDto<OrderResponseDto>> createOrder(
+      @RequestBody CreateOrderRequestDto requestDto,
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        OrderResponseDto orderResponseDto;
+    OrderResponseDto orderResponseDto;
 
-        orderResponseDto = orderService.createOrder(requestDto,
-            userDetails.getUser());
+    orderResponseDto = orderServiceImpl.createOrder(requestDto,
+        userDetails.getUser());
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .body(ResponseDto.<OrderResponseDto>builder()
-                .statusCode(HttpStatus.CREATED.value())
-                .data(orderResponseDto)
-                .build());
-    }
-
-    @GetMapping("/{orderId}")
-    public ResponseEntity<ResponseDto<OrderResponseDto>> getOrder(
-        @AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long orderId) {
-
-        OrderResponseDto orderResponseDto;
-
-        orderResponseDto = orderService.getOrder(userDetails.getUser(), orderId);
-
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.<OrderResponseDto>builder()
-            .statusCode(HttpStatus.OK.value())
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .body(ResponseDto.<OrderResponseDto>builder()
+            .statusCode(HttpStatus.CREATED.value())
             .data(orderResponseDto)
-            .build()
-        );
-    }
+            .build());
+  }
 
-    @GetMapping
-    public ResponseEntity<ResponseDto<List<OrderResponseDto>>> getOrderList(
-        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+  @GetMapping("/{orderId}")
+  public ResponseEntity<ResponseDto<OrderResponseDto>> getOrder(
+      @AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long orderId) {
 
-        List<OrderResponseDto> orderResponseDtoList;
+    OrderResponseDto orderResponseDto;
 
-        orderResponseDtoList = orderService.getOrderList(userDetails.getUser());
+    orderResponseDto = orderServiceImpl.getOrder(userDetails.getUser(), orderId);
 
-        return ResponseEntity.ok().body(ResponseDto.<List<OrderResponseDto>>builder()
-            .statusCode(HttpStatus.OK.value())
-            .data(orderResponseDtoList)
-            .build()
-        );
-    }
+    return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.<OrderResponseDto>builder()
+        .statusCode(HttpStatus.OK.value())
+        .data(orderResponseDto)
+        .build()
+    );
+  }
 
-    @DeleteMapping("/{orderId}")
-    public ResponseEntity<ResponseDto<Void>> deleteOrder(
-        @AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long orderId) {
+  @GetMapping
+  public ResponseEntity<ResponseDto<List<OrderResponseDto>>> getOrderList(
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        orderService.deleteOrder(userDetails.getUser(), orderId);
+    List<OrderResponseDto> orderResponseDtoList;
 
-        return ResponseEntity.ok().body(ResponseDto.<Void>builder()
-            .statusCode(HttpStatus.OK.value())
-            .data(null)
-            .build()
-        );
-    }
+    orderResponseDtoList = orderServiceImpl.getOrderList(userDetails.getUser());
 
-    @PatchMapping("/{orderId}")
-    public ResponseEntity<ResponseDto<OrderResponseDto>> modifyOrderRequest(
-        @AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long orderId,
-        @RequestBody ModifyOrderRequestDto modifyOrderRequestDto) {
+    return ResponseEntity.ok().body(ResponseDto.<List<OrderResponseDto>>builder()
+        .statusCode(HttpStatus.OK.value())
+        .data(orderResponseDtoList)
+        .build()
+    );
+  }
 
-        OrderResponseDto orderResponseDto;
+  @DeleteMapping("/{orderId}")
+  public ResponseEntity<ResponseDto<Void>> deleteOrder(
+      @AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long orderId) {
 
-        orderResponseDto = orderService.modifyOrderRequest(userDetails.getUser(),
-            orderId, modifyOrderRequestDto);
+    orderServiceImpl.deleteOrder(userDetails.getUser(), orderId);
 
-        return ResponseEntity.ok().body(ResponseDto.<OrderResponseDto>builder()
-            .statusCode(HttpStatus.OK.value())
-            .data(orderResponseDto)
-            .build()
-        );
-    }
+    return ResponseEntity.ok().body(ResponseDto.<Void>builder()
+        .statusCode(HttpStatus.OK.value())
+        .data(null)
+        .build()
+    );
+  }
+
+  @PatchMapping("/{orderId}")
+  public ResponseEntity<ResponseDto<OrderResponseDto>> modifyOrderRequest(
+      @AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long orderId,
+      @RequestBody ModifyOrderRequestDto modifyOrderRequestDto) {
+
+    OrderResponseDto orderResponseDto;
+
+    orderResponseDto = orderServiceImpl.modifyOrderRequest(userDetails.getUser(),
+        orderId, modifyOrderRequestDto);
+
+    return ResponseEntity.ok().body(ResponseDto.<OrderResponseDto>builder()
+        .statusCode(HttpStatus.OK.value())
+        .data(orderResponseDto)
+        .build()
+    );
+  }
 }

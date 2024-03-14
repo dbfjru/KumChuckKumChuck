@@ -18,29 +18,29 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class OrderServiceTest {
+class OrderServiceImplTest {
 
-    @InjectMocks
-    OrderService orderService;
-    @Mock
-    OrderRepository orderRepository;
-    @Mock
-    OrderDetailRepository orderDetailRepository;
+  @InjectMocks
+  OrderServiceImpl orderServiceImpl;
+  @Mock
+  OrderRepository orderRepository;
+  @Mock
+  OrderDetailRepository orderDetailRepository;
 
-    @DisplayName("주문생성 - 실패")
-    @Test
-    void createOrder_fail() {
-        //given
-        User testUser = new User();
-        CreateOrderRequestDto testRequestDto = new CreateOrderRequestDto("test request");
-        List<OrderDetail> orderDetailList = new ArrayList<>();
-        given(orderDetailRepository.findAllByUserAndOrder(testUser, null)).willReturn(
-            orderDetailList);
+  @DisplayName("주문생성 - 실패")
+  @Test
+  void createOrder_fail() {
+    //given
+    User testUser = new User();
+    CreateOrderRequestDto testRequestDto = new CreateOrderRequestDto("test request");
+    List<OrderDetail> orderDetailList = new ArrayList<>();
+    given(orderDetailRepository.findAllByUserAndOrder(testUser, null)).willReturn(
+        orderDetailList);
 
-        //when then
-        assertThrows(IllegalArgumentException.class,
-            () -> orderService.createOrder(testRequestDto, testUser));
-    }
+    //when then
+    assertThrows(IllegalArgumentException.class,
+        () -> orderServiceImpl.createOrder(testRequestDto, testUser));
+  }
 
 
 }
