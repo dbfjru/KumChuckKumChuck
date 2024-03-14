@@ -5,6 +5,7 @@ import com.example.sparta.domain.store.dto.OpeningHoursDto;
 import com.example.sparta.domain.store.dto.StoreRequestDto;
 import com.example.sparta.domain.store.dto.StoreResponseDto;
 import com.example.sparta.domain.store.service.StoreServiceImpl;
+import com.example.sparta.global.aop.MyLogging;
 import com.example.sparta.global.dto.ResponseDto;
 import com.example.sparta.global.impl.UserDetailsImpl;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/stores")
+@MyLogging
 public class StoreController {
 
   private final StoreServiceImpl storeServiceImpl;

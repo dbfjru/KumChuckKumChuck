@@ -43,7 +43,6 @@ public class DibsServiceImpl implements DibsService {
     try {
       Dibs dibs = dibsRepository.findDibsByStoreAndUser(store, user)
           .orElseThrow(() -> new NoSuchElementException("해당 찜을 찾을수 없어요"));
-      ;
       dibsRepository.delete(dibs);
       return storeId;
     } catch (Exception e) {
