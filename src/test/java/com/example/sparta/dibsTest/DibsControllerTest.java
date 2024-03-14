@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.sparta.domain.dibs.controller.DibsController;
-import com.example.sparta.domain.dibs.service.DibsService;
+import com.example.sparta.domain.dibs.service.DibsServiceImpl;
 import com.example.sparta.domain.user.entity.User;
 import com.example.sparta.global.MockSpringSecurityFilter;
 import com.example.sparta.global.config.WebSecurityConfig;
@@ -38,56 +38,56 @@ import org.springframework.web.context.WebApplicationContext;
 )
 public class DibsControllerTest {
 
-    public MockMvc mvc;
-    public Principal mockPrincipal;
-    @MockBean
-    DibsService Service;
-    @Autowired
-    public WebApplicationContext context;
-    @Autowired
-    public ObjectMapper objectMapper;
+  public MockMvc mvc;
+  public Principal mockPrincipal;
+  @MockBean
+  DibsServiceImpl Service;
+  @Autowired
+  public WebApplicationContext context;
+  @Autowired
+  public ObjectMapper objectMapper;
 
-    @BeforeEach
-    public void setup() {
-        mvc = MockMvcBuilders.webAppContextSetup(context)
-            .apply(springSecurity(new MockSpringSecurityFilter()))
-            .build();
-    }
+  @BeforeEach
+  public void setup() {
+    mvc = MockMvcBuilders.webAppContextSetup(context)
+        .apply(springSecurity(new MockSpringSecurityFilter()))
+        .build();
+  }
 
-    private void mockUserSetup() {
-        // Mock 테스트 유져 생성
-        User testUser = new User("user", "user", "user@user.com", "여기 : 삽니다");
+  private void mockUserSetup() {
+    // Mock 테스트 유져 생성
+    User testUser = new User("user", "user", "user@user.com", "여기 : 삽니다");
 
-        UserDetailsImpl testUserDetails = new UserDetailsImpl(testUser);
-        mockPrincipal = new UsernamePasswordAuthenticationToken(testUserDetails, "",
-            testUserDetails.getAuthorities());
-    }
+    UserDetailsImpl testUserDetails = new UserDetailsImpl(testUser);
+    mockPrincipal = new UsernamePasswordAuthenticationToken(testUserDetails, "",
+        testUserDetails.getAuthorities());
+  }
 
-    @Test
-    @DisplayName("Create dibs")
-    void test1() throws Exception {
-        //given
-        this.mockUserSetup();
+  @Test
+  @DisplayName("Create dibs")
+  void test1() throws Exception {
+    //given
+    this.mockUserSetup();
 
-        // when - then
-        this.mvc.perform(post("/dibs/store/1")
-                .principal(mockPrincipal)
-            )
-            .andExpect(status().is(201))
-            .andDo(print());
-    }
+    // when - then
+    this.mvc.perform(post("/dibs/store/1")
+            .principal(mockPrincipal)
+        )
+        .andExpect(status().is(201))
+        .andDo(print());
+  }
 
-    @Test
-    @DisplayName("remove dibs")
-    void test2() throws Exception {
-        //given
-        this.mockUserSetup();
+  @Test
+  @DisplayName("remove dibs")
+  void test2() throws Exception {
+    //given
+    this.mockUserSetup();
 
-        // when - then
-        this.mvc.perform(delete("/dibs/store/1")
-                .principal(mockPrincipal)
-            )
-            .andExpect(status().is(200))
-            .andDo(print());
-    }
+    // when - then
+    this.mvc.perform(delete("/dibs/store/1")
+            .principal(mockPrincipal)
+        )
+        .andExpect(status().is(200))
+        .andDo(print());
+  }
 }
