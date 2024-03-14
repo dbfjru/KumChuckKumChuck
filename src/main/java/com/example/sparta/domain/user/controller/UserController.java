@@ -5,7 +5,7 @@ import com.example.sparta.domain.user.dto.UserLoginRequestDto;
 import com.example.sparta.domain.user.dto.UserPasswordUpdateRequestDto;
 import com.example.sparta.domain.user.dto.UserProfileUpdateRequestDto;
 import com.example.sparta.domain.user.dto.UserSignupRequestDto;
-import com.example.sparta.domain.user.service.KakaoUserService;
+import com.example.sparta.domain.user.service.KakaoUserServiceImpl;
 import com.example.sparta.domain.user.service.UserServiceImpl;
 import com.example.sparta.global.dto.ResponseDto;
 import com.example.sparta.global.impl.UserDetailsImpl;
@@ -37,7 +37,7 @@ public class UserController {
 
   //JwtUtil 주입받기
   private final JwtUtil jwtUtil;
-  private final KakaoUserService kakaoUserService;
+  private final KakaoUserServiceImpl kakaoUserService;
 
   // 회원 가입 하기
   @PostMapping("/signup")
