@@ -21,7 +21,7 @@ import com.example.sparta.domain.orderdetail.dto.GetOrderDetailResponseDto;
 import com.example.sparta.domain.orderdetail.dto.OrderDetailRequestDto;
 import com.example.sparta.domain.orderdetail.dto.OrderDetailResponseDto;
 import com.example.sparta.domain.orderdetail.entity.OrderDetail;
-import com.example.sparta.domain.orderdetail.service.OrderDetailService;
+import com.example.sparta.domain.orderdetail.service.OrderDetailServiceImpl;
 import com.example.sparta.domain.store.dto.StoreRequestDto;
 import com.example.sparta.domain.store.entity.Store;
 import com.example.sparta.domain.user.entity.User;
@@ -56,159 +56,159 @@ import org.springframework.web.context.WebApplicationContext;
 )
 class OrderDetailControllerTest {
 
-    private MockMvc mockMvc;
-    private Principal principal;
+  private MockMvc mockMvc;
+  private Principal principal;
 
-    @Autowired
-    private WebApplicationContext context;
+  @Autowired
+  private WebApplicationContext context;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+  @Autowired
+  private ObjectMapper objectMapper;
 
-    @MockBean
-    OrderDetailService orderDetailService;
+  @MockBean
+  OrderDetailServiceImpl orderDetailServiceImpl;
 
-    User user;
-    Store store;
-    Menu menu1, menu2;
-    OrderDetail orderDetail1, orderDetail2;
+  User user;
+  Store store;
+  Menu menu1, menu2;
+  OrderDetail orderDetail1, orderDetail2;
 
-    @BeforeEach
-    public void setup() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(context)
-            .apply(springSecurity(new MockSpringSecurityFilter()))
-            .build();
+  @BeforeEach
+  public void setup() {
+    mockMvc = MockMvcBuilders.webAppContextSetup(context)
+        .apply(springSecurity(new MockSpringSecurityFilter()))
+        .build();
 
-        mockSetup();
-    }
+    mockSetup();
+  }
 
-    private void mockSetup() {
-        // Mock 테스트 유저 생성
-        Long userId = 100L;
-        String username = "abc123";
-        String password = "abc12345";
-        user = new User(username, password, "abc123@naver.com", "인천", UserRoleEnum.USER, 1L);
-        user.setUserId(userId);
-        UserDetailsImpl userDetails = new UserDetailsImpl(user);
-        principal = new UsernamePasswordAuthenticationToken(userDetails, "",
-            userDetails.getAuthorities());
+  private void mockSetup() {
+    // Mock 테스트 유저 생성
+    Long userId = 100L;
+    String username = "abc123";
+    String password = "abc12345";
+    user = new User(username, password, "abc123@naver.com", "인천", UserRoleEnum.USER, 1L);
+    user.setUserId(userId);
+    UserDetailsImpl userDetails = new UserDetailsImpl(user);
+    principal = new UsernamePasswordAuthenticationToken(userDetails, "",
+        userDetails.getAuthorities());
 
-        StoreRequestDto storeRequestDto = new StoreRequestDto();
-        storeRequestDto.setAddress("서울");
-        storeRequestDto.setName("가게");
-        storeRequestDto.setCategory("한식");
-        storeRequestDto.setContent("가게임");
-        storeRequestDto.setRating(0f);
-        storeRequestDto.setRating(0f);
-        storeRequestDto.setDeliveryAddress("서울");
-        storeRequestDto.setDibsCount(0);
-        storeRequestDto.setReviewCount(0);
+    StoreRequestDto storeRequestDto = new StoreRequestDto();
+    storeRequestDto.setAddress("서울");
+    storeRequestDto.setName("가게");
+    storeRequestDto.setCategory("한식");
+    storeRequestDto.setContent("가게임");
+    storeRequestDto.setRating(0f);
+    storeRequestDto.setRating(0f);
+    storeRequestDto.setDeliveryAddress("서울");
+    storeRequestDto.setDibsCount(0);
+    storeRequestDto.setReviewCount(0);
 
-        store = new Store(storeRequestDto, user);
+    store = new Store(storeRequestDto, user);
 
-        menu1 = new Menu("메뉴 1", 10000L, store);
-        menu1.setMenuId(1L);
-        menu2 = new Menu("메뉴 2", 5000L, store);
-        menu2.setMenuId(2L);
+    menu1 = new Menu("메뉴 1", 10000L, store);
+    menu1.setMenuId(1L);
+    menu2 = new Menu("메뉴 2", 5000L, store);
+    menu2.setMenuId(2L);
 
-        orderDetail1 = new OrderDetail(1, user, store, null, menu1);
-        orderDetail1.setOrderDetailId(1L);
-        orderDetail2 = new OrderDetail(3, user, store, null, menu2);
-        orderDetail2.setOrderDetailId(2L);
-    }
+    orderDetail1 = new OrderDetail(1, user, store, null, menu1);
+    orderDetail1.setOrderDetailId(1L);
+    orderDetail2 = new OrderDetail(3, user, store, null, menu2);
+    orderDetail2.setOrderDetailId(2L);
+  }
 
-    @Test
-    void addOrderDetail() throws Exception {
-        // given
-        OrderDetailRequestDto requestDto = new OrderDetailRequestDto(1);
-        String postInfo = objectMapper.writeValueAsString(requestDto);
+  @Test
+  void addOrderDetail() throws Exception {
+    // given
+    OrderDetailRequestDto requestDto = new OrderDetailRequestDto(1);
+    String postInfo = objectMapper.writeValueAsString(requestDto);
 
-        OrderDetailResponseDto responseDto = OrderDetailResponseDto.builder().menuId(1L)
-            .menuName("메뉴 1").menuPrice(10000L).quantity(1).build();
+    OrderDetailResponseDto responseDto = OrderDetailResponseDto.builder().menuId(1L)
+        .menuName("메뉴 1").menuPrice(10000L).quantity(1).build();
 
-        given(orderDetailService.addOrderDetail(any(OrderDetailRequestDto.class), anyLong(),
-            anyLong(), any(User.class))).willReturn(responseDto);
+    given(orderDetailServiceImpl.addOrderDetail(any(OrderDetailRequestDto.class), anyLong(),
+        anyLong(), any(User.class))).willReturn(responseDto);
 
-        // when
-        var action = mockMvc.perform(post("/stores/1/menus/1").content(postInfo).contentType(
-            MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).principal(principal));
+    // when
+    var action = mockMvc.perform(post("/stores/1/menus/1").content(postInfo).contentType(
+        MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).principal(principal));
 
-        // then
-        action.andDo(print());
-        action.andExpect(status().isCreated());
-        verify(orderDetailService, times(1)).addOrderDetail(any(OrderDetailRequestDto.class),
-            eq(1L), eq(1L), eq(user));
-    }
+    // then
+    action.andDo(print());
+    action.andExpect(status().isCreated());
+    verify(orderDetailServiceImpl, times(1)).addOrderDetail(any(OrderDetailRequestDto.class),
+        eq(1L), eq(1L), eq(user));
+  }
 
-    @Test
-    void getOrderDetail() throws Exception {
-        // given
-        List<GetOrderDetailMenuResponseDto> responseDtoList =
-            List.of(GetOrderDetailMenuResponseDto.builder().menuId(menu1.getMenuId())
-                    .menuName(menu1.getName()).menuPrice(menu1.getPrice())
-                    .quantity(orderDetail1.getQuantity()).build(),
-                GetOrderDetailMenuResponseDto.builder().menuId(menu2.getMenuId())
-                    .menuName(menu2.getName()).menuPrice(menu2.getPrice())
-                    .quantity(orderDetail2.getQuantity()).build());
+  @Test
+  void getOrderDetail() throws Exception {
+    // given
+    List<GetOrderDetailMenuResponseDto> responseDtoList =
+        List.of(GetOrderDetailMenuResponseDto.builder().menuId(menu1.getMenuId())
+                .menuName(menu1.getName()).menuPrice(menu1.getPrice())
+                .quantity(orderDetail1.getQuantity()).build(),
+            GetOrderDetailMenuResponseDto.builder().menuId(menu2.getMenuId())
+                .menuName(menu2.getName()).menuPrice(menu2.getPrice())
+                .quantity(orderDetail2.getQuantity()).build());
 
-        GetOrderDetailResponseDto responseDto = GetOrderDetailResponseDto.builder()
-            .storeId(store.getStoreId())
-            .storeName(store.getName())
-            .orderDetailMenuResponseDtoList(responseDtoList).build();
+    GetOrderDetailResponseDto responseDto = GetOrderDetailResponseDto.builder()
+        .storeId(store.getStoreId())
+        .storeName(store.getName())
+        .orderDetailMenuResponseDtoList(responseDtoList).build();
 
-        given(orderDetailService.getOrderDetail(any(User.class))).willReturn(responseDto);
+    given(orderDetailServiceImpl.getOrderDetail(any(User.class))).willReturn(responseDto);
 
-        // when
-        var action = mockMvc.perform(
-            get("/orderDetails").accept(MediaType.APPLICATION_JSON).principal(principal));
+    // when
+    var action = mockMvc.perform(
+        get("/orderDetails").accept(MediaType.APPLICATION_JSON).principal(principal));
 
-        // then
-        action.andDo(print());
-        action.andExpect(status().isOk());
-        verify(orderDetailService, times(1)).getOrderDetail(any(User.class));
-    }
+    // then
+    action.andDo(print());
+    action.andExpect(status().isOk());
+    verify(orderDetailServiceImpl, times(1)).getOrderDetail(any(User.class));
+  }
 
-    @Test
-    void deleteOrderDetail() throws Exception {
-        // given
-        Long deletedId = orderDetail1.getOrderDetailId();
+  @Test
+  void deleteOrderDetail() throws Exception {
+    // given
+    Long deletedId = orderDetail1.getOrderDetailId();
 
-        given(orderDetailService.deleteOrderDetail(anyLong(), any(User.class))).willReturn(
-            deletedId);
+    given(orderDetailServiceImpl.deleteOrderDetail(anyLong(), any(User.class))).willReturn(
+        deletedId);
 
-        // when
-        var action = mockMvc.perform(
-            delete("/orderDetails/1").accept(MediaType.APPLICATION_JSON).principal(principal));
+    // when
+    var action = mockMvc.perform(
+        delete("/orderDetails/1").accept(MediaType.APPLICATION_JSON).principal(principal));
 
-        // then
-        action.andDo(print());
-        action.andExpect(status().isNoContent());
-        verify(orderDetailService, times(1)).deleteOrderDetail(eq(orderDetail1.getOrderDetailId()),
-            any(User.class));
-    }
+    // then
+    action.andDo(print());
+    action.andExpect(status().isNoContent());
+    verify(orderDetailServiceImpl, times(1)).deleteOrderDetail(eq(orderDetail1.getOrderDetailId()),
+        any(User.class));
+  }
 
-    @Test
-    void updateOrderDetail() throws Exception {
-        // given
-        Integer quantity = 5;
+  @Test
+  void updateOrderDetail() throws Exception {
+    // given
+    Integer quantity = 5;
 
-        OrderDetailResponseDto responseDto = OrderDetailResponseDto.builder()
-            .menuId(menu1.getMenuId()).menuName(menu1.getName()).menuPrice(menu1.getPrice())
-            .quantity(quantity).build();
+    OrderDetailResponseDto responseDto = OrderDetailResponseDto.builder()
+        .menuId(menu1.getMenuId()).menuName(menu1.getName()).menuPrice(menu1.getPrice())
+        .quantity(quantity).build();
 
-        given(orderDetailService.updateOrderDetail(anyLong(), anyInt(), any(User.class)))
-            .willReturn(responseDto);
+    given(orderDetailServiceImpl.updateOrderDetail(anyLong(), anyInt(), any(User.class)))
+        .willReturn(responseDto);
 
-        // when
-        var action = mockMvc.perform(
-            patch("/orderDetails/1").param("quantity", String.valueOf(quantity))
-                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
-                .principal(principal));
+    // when
+    var action = mockMvc.perform(
+        patch("/orderDetails/1").param("quantity", String.valueOf(quantity))
+            .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)
+            .principal(principal));
 
-        // then
-        action.andDo(print());
-        action.andExpect(status().isOk());
-        verify(orderDetailService, times(1)).updateOrderDetail(eq(orderDetail1.getOrderDetailId()),
-            eq(quantity), any(User.class));
-    }
+    // then
+    action.andDo(print());
+    action.andExpect(status().isOk());
+    verify(orderDetailServiceImpl, times(1)).updateOrderDetail(eq(orderDetail1.getOrderDetailId()),
+        eq(quantity), any(User.class));
+  }
 }
