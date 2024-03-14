@@ -5,6 +5,7 @@ import com.example.sparta.domain.menu.dto.AddMenuResponseDto;
 import com.example.sparta.domain.menu.dto.GetMenuResponseDto;
 import com.example.sparta.domain.menu.service.MenuServiceImpl;
 import com.example.sparta.global.aop.MyLogging;
+import com.example.sparta.global.aop.MyPerfMeasure;
 import com.example.sparta.global.dto.ResponseDto;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @MyLogging
+@MyPerfMeasure
 public class MenuController {
 
   private final MenuServiceImpl menuServiceImpl;

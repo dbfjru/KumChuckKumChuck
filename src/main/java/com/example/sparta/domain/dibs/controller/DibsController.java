@@ -3,6 +3,7 @@ package com.example.sparta.domain.dibs.controller;
 import com.example.sparta.domain.dibs.dto.DibsResponseDto;
 import com.example.sparta.domain.dibs.service.DibsServiceImpl;
 import com.example.sparta.global.aop.MyLogging;
+import com.example.sparta.global.aop.MyPerfMeasure;
 import com.example.sparta.global.dto.ResponseDto;
 import com.example.sparta.global.impl.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 @RequestMapping("/dibs")
 @MyLogging
+@MyPerfMeasure
 public class DibsController {
 
   private final DibsServiceImpl dibsServicesImpl;
