@@ -8,7 +8,6 @@ import com.example.sparta.domain.user.dto.UserSignupRequestDto;
 import com.example.sparta.domain.user.dto.UserSignupResponseDto;
 import com.example.sparta.domain.user.entity.User;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.transaction.annotation.Transactional;
 
 
 public interface UserService {
@@ -41,7 +40,7 @@ public interface UserService {
    * @param userProfileUpdateRequestDto 수정할 정보(name,address) 내포
    * @param user                        수정할 유저
    */
-  @Transactional
+
   public UserProfileUpdateResponseDto userProfileUpdate(
       UserProfileUpdateRequestDto userProfileUpdateRequestDto,
       User user);
@@ -52,7 +51,7 @@ public interface UserService {
    * @param userPasswordUpdateRequestDto 수정 비밀번호 정보(password, newPassword, checkPassword) 내포
    * @param user                         수정할 유저
    */
-  @Transactional
+
   public void userPasswordUpdate(UserPasswordUpdateRequestDto userPasswordUpdateRequestDto,
       User user);
 }

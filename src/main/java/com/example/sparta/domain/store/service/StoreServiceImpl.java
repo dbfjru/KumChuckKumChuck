@@ -1,0 +1,155 @@
+package com.example.sparta.domain.store.service;
+
+import com.example.sparta.domain.store.dto.CreateStoreRequestDto;
+import com.example.sparta.domain.store.dto.OpeningHoursDto;
+import com.example.sparta.domain.store.dto.StoreRequestDto;
+import com.example.sparta.domain.store.dto.StoreResponseDto;
+import com.example.sparta.domain.store.entity.Store;
+import com.example.sparta.domain.store.repository.StoreRepository;
+import com.example.sparta.domain.user.entity.User;
+import com.example.sparta.domain.user.entity.UserRoleEnum;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+public class StoreServiceImpl implements StoreService {
+
+  private final StoreRepository storeRepository;
+
+  @Override
+  public StoreResponseDto createStore(CreateStoreRequestDto requestDto, User user) {
+    Store store = new Store(requestDto, user);
+    Store saveStore = storeRepository.save(store);
+    return new StoreResponseDto(saveStore);
+  }
+
+  @Override
+  public List<StoreResponseDto> getAllStore() {
+    List<Store> stores = storeRepository.findAll();
+    List<StoreResponseDto> responseDtoList = new ArrayList<>();
+    for (Store store : stores) {
+      responseDtoList.add(new StoreResponseDto(store));
+    }
+    return responseDtoList;
+  }
+
+  @Override
+  @Transactional
+  public Long editStore(Long id, StoreRequestDto storeRequestDto, User user) {
+    Store store = storeRepository.findById(id)
+        .orElseThrow(() -> new NoSuchElementException("해당 가게를 찾을수 없어요."));
+    if (checkingUserAccessPermission(user.getUserId(), store.getOwner().getUserId())) {
+      try {
+        store.update(storeRequestDto);
+      } catch (Exception e) {
+        throw new IllegalArgumentException("수정 하는데 오류 발생");
+      }
+    }
+    return id;
+  }
+
+  @Override
+  public Long deleteStore(Long id, User user) {
+    Store store = storeRepository.findById(id)
+        .orElseThrow(() -> new NoSuchElementException("해당 가게를 찾을수 없어요."));
+    try {
+      if (checkingUserAccessPermission(user.getUserId(), store.getOwner().getUserId())) {
+        storeRepository.delete(store);
+      }
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException("삭제 하는데 오류 발생");
+    }
+    return id;
+  }
+
+  @Override
+  public StoreResponseDto getStoreById(Long id) {
+    Store store = storeRepository.findById(id)
+        .orElseThrow(() -> new NoSuchElementException("해당 가게를 찾을수 없어요."));
+    return new StoreResponseDto(store);
+  }
+
+  @Override
+  public List<StoreResponseDto> getAllStoreByName(String name) {
+    List<Store> stores = storeRepository.findAllByNameContains(name);
+    List<StoreResponseDto> responseDtoList = new ArrayList<>();
+    for (Store store : stores) {
+      responseDtoList.add(new StoreResponseDto(store));
+    }
+    return responseDtoList;
+  }
+
+  @Override
+  @Transactional
+  public Long openStore(Long id, User user) {
+    Store store = storeRepository.findById(id)
+        .orElseThrow(() -> new NoSuchElementException("해당 가게를 찾을수 없어요."));
+    if (checkingUserAccessPermission(user.getUserId(), store.getOwner().getUserId())) {
+      try {
+        store.openStore(true);
+      } catch (Exception e) {
+        throw new IllegalArgumentException("가계 영업 시작 하는데 오류 발생");
+      }
+    }
+    return id;
+  }
+
+  @Override
+  @Transactional
+  public Long closeStore(Long id, User user) {
+    Store store = storeRepository.findById(id)
+        .orElseThrow(() -> new NoSuchElementException("해당 가게를 찾을수 없어요."));
+    if (checkingUserAccessPermission(user.getUserId(), store.getOwner().getUserId())) {
+      try {
+        store.openStore(false);
+      } catch (Exception e) {
+        throw new IllegalArgumentException("가계 영업 종료 하는데 오류 발생");
+      }
+    }
+    return id;
+  }
+
+  @Override
+  @Transactional
+  public OpeningHoursDto updateOpeningHours(Long id, OpeningHoursDto dto, User user) {
+    Store store = storeRepository.findById(id)
+        .orElseThrow(() -> new NoSuchElementException("해당 가게를 찾을수 없어요."));
+    if (checkingUserAccessPermission(user.getUserId(), store.getOwner().getUserId())) {
+      try {
+        store.setOpeningHours(dto);
+      } catch (Exception e) {
+        throw new IllegalArgumentException("영업 시간 변경 오류 발생");
+      }
+    }
+    return new OpeningHoursDto(store);
+  }
+
+  // Admin tools
+  @Override
+  @Transactional
+  public StoreResponseDto forceStatus(Long id, int code, UserRoleEnum role) {
+    if (!role.equals(UserRoleEnum.ADMIN)) {
+      throw new IllegalArgumentException("해당 권한이 없습니다.");
+    }
+
+    Store store = storeRepository.findById(id)
+        .orElseThrow(() -> new NoSuchElementException("해당 가게를 찾을수 없어요."));
+    store.updateStatus(code);
+
+    return new StoreResponseDto(store);
+  }
+
+  private boolean checkingUserAccessPermission(long userId, long storeId) {
+    if (userId == storeId) {
+      return true;
+    } else {
+      throw new IllegalArgumentException("이 게시글 에 수정 권한이 없습니다.");
+    }
+  }
+
+}

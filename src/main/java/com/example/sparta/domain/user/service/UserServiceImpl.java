@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -74,6 +75,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional
   public UserProfileUpdateResponseDto userProfileUpdate(
       UserProfileUpdateRequestDto userProfileUpdateRequestDto, User user) {
     String email = user.getEmail();
@@ -89,6 +91,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional
   public void userPasswordUpdate(UserPasswordUpdateRequestDto userPasswordUpdateRequestDto,
       User user) {
     String email = user.getEmail();

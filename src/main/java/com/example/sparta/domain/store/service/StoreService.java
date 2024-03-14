@@ -4,152 +4,88 @@ import com.example.sparta.domain.store.dto.CreateStoreRequestDto;
 import com.example.sparta.domain.store.dto.OpeningHoursDto;
 import com.example.sparta.domain.store.dto.StoreRequestDto;
 import com.example.sparta.domain.store.dto.StoreResponseDto;
-import com.example.sparta.domain.store.entity.Store;
-import com.example.sparta.domain.store.repository.StoreRepository;
 import com.example.sparta.domain.user.entity.User;
 import com.example.sparta.domain.user.entity.UserRoleEnum;
-import jakarta.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-@Service
-@RequiredArgsConstructor
-public class StoreService {
+public interface StoreService {
 
-    private final StoreRepository storeRepository;
+  /**
+   * 가게 생성
+   *
+   * @param requestDto 가게의 name, category, address, content, deliveryAddress 내포
+   * @param user       가게의 주인이 될 User 정보
+   */
+  public StoreResponseDto createStore(CreateStoreRequestDto requestDto, User user);
 
-    public StoreResponseDto createStore(CreateStoreRequestDto requestDto, User user) {
-        Store store = new Store(requestDto, user);
-        Store saveStore = storeRepository.save(store);
-        return new StoreResponseDto(saveStore);
-    }
+  /**
+   * 모든 가게 목록 조회
+   */
+  public List<StoreResponseDto> getAllStore();
 
+  /**
+   * 가게 수정
+   *
+   * @param id              수정할 가게의 ID
+   * @param storeRequestDto 수정할 정보 (name, category, address, content, rating, dibsCount,
+   *                        reviewCount, deliveryAddress)
+   * @param user            수정할 가게의 주인 유저
+   */
+  public Long editStore(Long id, StoreRequestDto storeRequestDto, User user);
 
-    public List<StoreResponseDto> getAllStore() {
-        List<Store> stores = storeRepository.findAll();
-        List<StoreResponseDto> responseDtoList = new ArrayList<>();
-        for (Store store : stores) {
-            responseDtoList.add(new StoreResponseDto(store));
-        }
-        return responseDtoList;
-    }
+  /**
+   * 가게 삭제
+   *
+   * @param id   삭제할 가게 ID
+   * @param user 삭제할 가게의 주인
+   */
+  public Long deleteStore(Long id, User user);
 
-    @Transactional
-    public Long editStore(Long id, StoreRequestDto storeRequestDto, User user) {
-        Store store = storeRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("해당 가게를 찾을수 없어요."));
-        if (checkingUserAccessPermission(user.getUserId(), store.getOwner().getUserId())) {
-            try {
-                store.update(storeRequestDto);
-            } catch (Exception e) {
-                throw new IllegalArgumentException("수정 하는데 오류 발생");
-            }
-        }
-        return id;
-    }
+  /**
+   * 특정 가게 조회
+   *
+   * @param id 특정 가게의 ID
+   */
+  public StoreResponseDto getStoreById(Long id);
 
-    public Long deleteStore(Long id, User user) {
-        Store store = storeRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("해당 가게를 찾을수 없어요."));
-        try {
-            if (checkingUserAccessPermission(user.getUserId(), store.getOwner().getUserId())) {
-                storeRepository.delete(store);
-            }
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("삭제 하는데 오류 발생");
-        }
-        return id;
-    }
+  /**
+   * 가게의 이름으로 조회
+   *
+   * @param name 조회할 가게 이름
+   */
+  public List<StoreResponseDto> getAllStoreByName(String name);
 
-    public StoreResponseDto getStoreById(Long id) {
-        Store store = storeRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("해당 가게를 찾을수 없어요."));
-        return new StoreResponseDto(store);
-    }
+  /**
+   * 가게 영업 시작 버튼
+   *
+   * @param id   가게 아이디
+   * @param user 가게 주인
+   */
+  public Long openStore(Long id, User user);
 
-    ///    EXTRA
-    public List<StoreResponseDto> getAllStoreByName(String name) {
-        List<Store> stores = storeRepository.findAllByNameContains(name);
-        List<StoreResponseDto> responseDtoList = new ArrayList<>();
-        for (Store store : stores) {
-            responseDtoList.add(new StoreResponseDto(store));
-        }
-        return responseDtoList;
-    }
+  /**
+   * 가게 영업 종료 버튼
+   *
+   * @param id   가게 아이디
+   * @param user 가게 주인
+   */
+  public Long closeStore(Long id, User user);
 
-    /*
-     *
-     *     Opening Store
-     *
-     */
-    @Transactional
-    public Long openStore(Long id, User user) {
-        Store store = storeRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("해당 가게를 찾을수 없어요."));
-        if (checkingUserAccessPermission(user.getUserId(), store.getOwner().getUserId())) {
-            try {
-                store.openStore(true);
-            } catch (Exception e) {
-                throw new IllegalArgumentException("가계 영업 시작 하는데 오류 발생");
-            }
-        }
-        return id;
-    }
+  /**
+   * 가게 영업 시작 시간 변경
+   *
+   * @param id   가게 아이디
+   * @param dto  가게 영업시간 변경정보(opening, closing) 내포
+   * @param user 가게 주인
+   */
+  public OpeningHoursDto updateOpeningHours(Long id, OpeningHoursDto dto, User user);
 
-    @Transactional
-    public Long closeStore(Long id, User user) {
-        Store store = storeRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("해당 가게를 찾을수 없어요."));
-        if (checkingUserAccessPermission(user.getUserId(), store.getOwner().getUserId())) {
-            try {
-                store.openStore(false);
-            } catch (Exception e) {
-                throw new IllegalArgumentException("가계 영업 종료 하는데 오류 발생");
-            }
-        }
-        return id;
-    }
-
-
-    @Transactional
-    public OpeningHoursDto updateOpeningHours(Long id, OpeningHoursDto dto, User user) {
-        Store store = storeRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("해당 가게를 찾을수 없어요."));
-        if (checkingUserAccessPermission(user.getUserId(), store.getOwner().getUserId())) {
-            try {
-                store.setOpeningHours(dto);
-            } catch (Exception e) {
-                throw new IllegalArgumentException("영업 시간 변경 오류 발생");
-            }
-        }
-        return new OpeningHoursDto(store);
-    }
-
-    // Admin tools
-    @Transactional
-    public StoreResponseDto forceStatus(Long id, int code, UserRoleEnum role) {
-        if (!role.equals(UserRoleEnum.ADMIN)) {
-            throw new IllegalArgumentException("해당 권한이 없습니다.");
-        }
-
-        Store store = storeRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("해당 가게를 찾을수 없어요."));
-        store.updateStatus(code);
-
-        return new StoreResponseDto(store);
-    }
-
-
-    private boolean checkingUserAccessPermission(long userId, long storeId) {
-        if (userId == storeId) {
-            return true;
-        } else {
-            throw new IllegalArgumentException("이 게시글 에 수정 권한이 없습니다.");
-        }
-    }
-
-
+  /**
+   * 관리자 권한 가게 상태 강제 변경
+   *
+   * @param id   변경할 가게 아이디
+   * @param code 변경할 가게 상태 (0~5 가능)
+   * @param role 권한 확인
+   */
+  public StoreResponseDto forceStatus(Long id, int code, UserRoleEnum role);
 }
