@@ -2,7 +2,7 @@ package com.example.sparta.domain.review.controller;
 
 import com.example.sparta.domain.review.dto.ReviewRequestDto;
 import com.example.sparta.domain.review.dto.ReviewResponseDto;
-import com.example.sparta.domain.review.service.ReviewService;
+import com.example.sparta.domain.review.service.ReviewServiceImpl;
 import com.example.sparta.global.dto.ResponseDto;
 import com.example.sparta.global.impl.UserDetailsImpl;
 import java.util.List;
@@ -24,79 +24,79 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/reviews")
 public class ReviewController {
 
-    private final ReviewService reviewService;
+  private final ReviewServiceImpl reviewServiceImpl;
 
-    //모든 리뷰조회
-    @GetMapping
-    public ResponseEntity<ResponseDto<List<ReviewResponseDto>>> allReviews() {
-        List<ReviewResponseDto> all = reviewService.findAll();
+  //모든 리뷰조회
+  @GetMapping
+  public ResponseEntity<ResponseDto<List<ReviewResponseDto>>> allReviews() {
+    List<ReviewResponseDto> all = reviewServiceImpl.findAll();
 
-        return ResponseEntity.ok().body(ResponseDto.
-            <List<ReviewResponseDto>>builder()
-            .statusCode(HttpStatus.OK.value())
-            .data(all)
-            .build());
-    }
+    return ResponseEntity.ok().body(ResponseDto.
+        <List<ReviewResponseDto>>builder()
+        .statusCode(HttpStatus.OK.value())
+        .data(all)
+        .build());
+  }
 
-    //단건 리뷰조회
-    @GetMapping("/{reviewId}")
-    public ResponseEntity<ResponseDto<ReviewResponseDto>> oneReview(@PathVariable Long reviewId) {
-        ReviewResponseDto reviewResponseDto = reviewService.findOne(reviewId);
+  //단건 리뷰조회
+  @GetMapping("/{reviewId}")
+  public ResponseEntity<ResponseDto<ReviewResponseDto>> oneReview(@PathVariable Long reviewId) {
+    ReviewResponseDto reviewResponseDto = reviewServiceImpl.findOne(reviewId);
 
-        return ResponseEntity.ok().body(ResponseDto.
+    return ResponseEntity.ok().body(ResponseDto.
+        <ReviewResponseDto>builder()
+        .statusCode(HttpStatus.OK.value())
+        .data(reviewResponseDto)
+        .build());
+  }
+
+  //리뷰수정
+  //유저검증하기 위해 userDetails에 유저를 반환하여 검증
+  @PutMapping("/{reviewId}")
+  public ResponseEntity<ResponseDto<ReviewResponseDto>> updateReview(@PathVariable Long reviewId,
+      @RequestBody ReviewRequestDto reviewRequestDto,
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+    ReviewResponseDto reviewResponseDto = reviewServiceImpl.updateOne(reviewId, reviewRequestDto,
+        userDetails.getUser());
+
+    return ResponseEntity.ok()
+        .body(ResponseDto.
             <ReviewResponseDto>builder()
             .statusCode(HttpStatus.OK.value())
             .data(reviewResponseDto)
             .build());
-    }
+  }
 
-    //리뷰수정
-    //유저검증하기 위해 userDetails에 유저를 반환하여 검증
-    @PutMapping("/{reviewId}")
-    public ResponseEntity<ResponseDto<ReviewResponseDto>> updateReview(@PathVariable Long reviewId,
-        @RequestBody ReviewRequestDto reviewRequestDto,
-        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+  //리뷰 등록
+  @PostMapping
+  public ResponseEntity<ResponseDto<ReviewResponseDto>> registerReview(
+      @RequestBody ReviewRequestDto reviewRequestDto,
+      @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        ReviewResponseDto reviewResponseDto = reviewService.updateOne(reviewId, reviewRequestDto,
-            userDetails.getUser());
+    ReviewResponseDto register = reviewServiceImpl.register(reviewRequestDto,
+        userDetails.getUser());
 
-        return ResponseEntity.ok()
-            .body(ResponseDto.
-                <ReviewResponseDto>builder()
-                .statusCode(HttpStatus.OK.value())
-                .data(reviewResponseDto)
-                .build());
-    }
+    return ResponseEntity.ok()
+        .body(ResponseDto.
+            <ReviewResponseDto>builder()
+            .statusCode(HttpStatus.OK.value())
+            .data(register)
+            .build());
+  }
 
-    //리뷰 등록
-    @PostMapping
-    public ResponseEntity<ResponseDto<ReviewResponseDto>> registerReview(
-        @RequestBody ReviewRequestDto reviewRequestDto,
-        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+  //리뷰 삭제
+  @DeleteMapping("/{reviewId}")
+  public ResponseEntity<ResponseDto<ReviewResponseDto>> deleteReview(
+      @PathVariable Long reviewId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        ReviewResponseDto register = reviewService.register(reviewRequestDto,
-            userDetails.getUser());
+    reviewServiceImpl.deleteOne(reviewId, userDetails.getUser());
 
-        return ResponseEntity.ok()
-            .body(ResponseDto.
-                <ReviewResponseDto>builder()
-                .statusCode(HttpStatus.OK.value())
-                .data(register)
-                .build());
-    }
-
-    //리뷰 삭제
-    @DeleteMapping("/{reviewId}")
-    public ResponseEntity<ResponseDto<ReviewResponseDto>> deleteReview(
-        @PathVariable Long reviewId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
-        reviewService.deleteOne(reviewId, userDetails.getUser());
-
-        return ResponseEntity.ok()
-            .body(ResponseDto.
-                <ReviewResponseDto>builder()
-                .statusCode(HttpStatus.OK.value())
-                .data(null)
-                .build());
-    }
+    return ResponseEntity.ok()
+        .body(ResponseDto.
+            <ReviewResponseDto>builder()
+            .statusCode(HttpStatus.OK.value())
+            .data(null)
+            .build());
+  }
 }
