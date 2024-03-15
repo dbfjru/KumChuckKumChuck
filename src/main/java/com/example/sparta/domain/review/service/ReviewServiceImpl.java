@@ -5,6 +5,7 @@ import com.example.sparta.domain.order.repository.OrderRepository;
 import com.example.sparta.domain.review.dto.ReviewRequestDto;
 import com.example.sparta.domain.review.dto.ReviewResponseDto;
 import com.example.sparta.domain.review.entity.Review;
+import com.example.sparta.domain.review.repository.ReviewQueryRepository;
 import com.example.sparta.domain.review.repository.ReviewRepository;
 import com.example.sparta.domain.store.entity.Store;
 import com.example.sparta.domain.store.repository.StoreRepository;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 public class ReviewServiceImpl implements ReviewService {
 
   private final ReviewRepository reviewRepository;
+  private final ReviewQueryRepository reviewQueryRepository;
   private final StoreRepository storeRepository;
   private final OrderRepository orderRepository;
 
@@ -69,7 +71,7 @@ public class ReviewServiceImpl implements ReviewService {
         () -> new NoSuchElementException("주문을 찾을 수 없습니다")
     );
 
-    if (reviewRepository.findByOrder(order).isPresent()) {
+    if (reviewQueryRepository.findByOrder(order) != null) {
       throw new IllegalArgumentException("이미 리뷰가 등록돼있습니다.");
     }
 
