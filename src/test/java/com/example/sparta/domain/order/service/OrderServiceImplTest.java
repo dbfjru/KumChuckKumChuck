@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.given;
 import com.example.sparta.domain.order.dto.CreateOrderRequestDto;
 import com.example.sparta.domain.order.repository.OrderRepository;
 import com.example.sparta.domain.orderdetail.entity.OrderDetail;
+import com.example.sparta.domain.orderdetail.repository.OrderDetailQueryRepository;
 import com.example.sparta.domain.orderdetail.repository.OrderDetailRepository;
 import com.example.sparta.domain.user.entity.User;
 import java.util.ArrayList;
@@ -26,6 +27,8 @@ class OrderServiceImplTest {
   OrderRepository orderRepository;
   @Mock
   OrderDetailRepository orderDetailRepository;
+  @Mock
+  OrderDetailQueryRepository orderDetailQueryRepository;
 
   @DisplayName("주문생성 - 실패")
   @Test
@@ -34,7 +37,7 @@ class OrderServiceImplTest {
     User testUser = new User();
     CreateOrderRequestDto testRequestDto = new CreateOrderRequestDto("test request");
     List<OrderDetail> orderDetailList = new ArrayList<>();
-    given(orderDetailRepository.findAllByUserAndOrder(testUser, null)).willReturn(
+    given(orderDetailQueryRepository.findAllByUserAndOrder(testUser, null)).willReturn(
         orderDetailList);
 
     //when then

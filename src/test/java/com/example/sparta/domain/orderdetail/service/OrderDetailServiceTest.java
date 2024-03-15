@@ -10,6 +10,7 @@ import com.example.sparta.domain.orderdetail.dto.GetOrderDetailResponseDto;
 import com.example.sparta.domain.orderdetail.dto.OrderDetailRequestDto;
 import com.example.sparta.domain.orderdetail.dto.OrderDetailResponseDto;
 import com.example.sparta.domain.orderdetail.entity.OrderDetail;
+import com.example.sparta.domain.orderdetail.repository.OrderDetailQueryRepository;
 import com.example.sparta.domain.orderdetail.repository.OrderDetailRepository;
 import com.example.sparta.domain.store.dto.StoreRequestDto;
 import com.example.sparta.domain.store.entity.Store;
@@ -31,6 +32,8 @@ public class OrderDetailServiceTest {
   @Mock
   OrderDetailRepository orderDetailRepository;
   @Mock
+  OrderDetailQueryRepository orderDetailQueryRepository;
+  @Mock
   StoreRepository storeRepository;
   @Mock
   MenuRepository menuRepository;
@@ -43,7 +46,8 @@ public class OrderDetailServiceTest {
 
   @BeforeEach
   void setUp() {
-    orderDetailServiceImpl = new OrderDetailServiceImpl(orderDetailRepository, storeRepository,
+    orderDetailServiceImpl = new OrderDetailServiceImpl(orderDetailRepository,
+        orderDetailQueryRepository, storeRepository,
         menuRepository);
 
     user = new User("user123", "password123", "user@user.com", "서울", UserRoleEnum.USER, 1L);
@@ -93,7 +97,7 @@ public class OrderDetailServiceTest {
     OrderDetail orderDetail2 = new OrderDetail(2, user, store, null, menu2);
     orderDetailList.add(orderDetail1);
     orderDetailList.add(orderDetail2);
-    given(orderDetailRepository.findAllByUser(user)).willReturn(orderDetailList);
+    given(orderDetailQueryRepository.findAllByUser(user)).willReturn(orderDetailList);
 
     // when
     GetOrderDetailResponseDto responseDto = orderDetailServiceImpl.getOrderDetail(user);

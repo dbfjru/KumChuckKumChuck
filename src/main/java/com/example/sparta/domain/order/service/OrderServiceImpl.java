@@ -7,6 +7,7 @@ import com.example.sparta.domain.order.dto.OrderResponseDto;
 import com.example.sparta.domain.order.entity.Order;
 import com.example.sparta.domain.order.repository.OrderRepository;
 import com.example.sparta.domain.orderdetail.entity.OrderDetail;
+import com.example.sparta.domain.orderdetail.repository.OrderDetailQueryRepository;
 import com.example.sparta.domain.orderdetail.repository.OrderDetailRepository;
 import com.example.sparta.domain.store.entity.Store;
 import com.example.sparta.domain.user.entity.User;
@@ -23,11 +24,13 @@ public class OrderServiceImpl implements OrderService {
 
   private final OrderRepository orderRepository;
   private final OrderDetailRepository orderDetailRepository;
+  private final OrderDetailQueryRepository orderDetailQueryRepository;
 
   @Override
   @Transactional
   public OrderResponseDto createOrder(CreateOrderRequestDto requestDto, User user) {
-    List<OrderDetail> orderDetailList = orderDetailRepository.findAllByUserAndOrder(user, null);
+    List<OrderDetail> orderDetailList = orderDetailQueryRepository.findAllByUserAndOrder(user,
+        null);
     if (orderDetailList.isEmpty()) {
       throw new IllegalArgumentException("주문 실패 : 주문할 메뉴를 골라주세요.");
     }
@@ -78,7 +81,7 @@ public class OrderServiceImpl implements OrderService {
   }
 
   private OrderResponseDto orderResponseDtoMaker(Order order) {
-    List<OrderDetail> orderDetailList = orderDetailRepository.findAllByOrder(order);
+    List<OrderDetail> orderDetailList = orderDetailQueryRepository.findAllByOrder(order);
     List<OrderDetailResponseBucket> responseBucketList = new ArrayList<>();
     for (OrderDetail orderDetail : orderDetailList) {
       OrderDetailResponseBucket orderDetailResponseBucket = OrderDetailResponseBucket.builder()
@@ -102,7 +105,7 @@ public class OrderServiceImpl implements OrderService {
       throw new IllegalArgumentException("주문 삭제 권한이 없습니다.");
     }
 
-    List<OrderDetail> orderDetailList = orderDetailRepository.findAllByOrder(order);
+    List<OrderDetail> orderDetailList = orderDetailQueryRepository.findAllByOrder(order);
 
     orderDetailRepository.deleteAll(orderDetailList);
 

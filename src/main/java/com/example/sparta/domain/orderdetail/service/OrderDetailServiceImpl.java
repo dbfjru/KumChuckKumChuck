@@ -7,6 +7,7 @@ import com.example.sparta.domain.orderdetail.dto.GetOrderDetailResponseDto;
 import com.example.sparta.domain.orderdetail.dto.OrderDetailRequestDto;
 import com.example.sparta.domain.orderdetail.dto.OrderDetailResponseDto;
 import com.example.sparta.domain.orderdetail.entity.OrderDetail;
+import com.example.sparta.domain.orderdetail.repository.OrderDetailQueryRepository;
 import com.example.sparta.domain.orderdetail.repository.OrderDetailRepository;
 import com.example.sparta.domain.store.entity.Store;
 import com.example.sparta.domain.store.repository.StoreRepository;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderDetailServiceImpl implements OrderDetailService {
 
   private final OrderDetailRepository orderDetailRepository;
+  private final OrderDetailQueryRepository orderDetailQueryRepository;
   private final StoreRepository storeRepository;
   private final MenuRepository menuRepository;
 
@@ -57,9 +59,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
   @Override
   public GetOrderDetailResponseDto getOrderDetail(User user) {
 
-    List<OrderDetail> orderDetailList = orderDetailRepository.findAllByUser(user);
+    List<OrderDetail> orderDetailList = orderDetailQueryRepository.findAllByUser(user);
 
-    if (orderDetailList == null || orderDetailList.isEmpty()) {
+    if (orderDetailList.isEmpty()) {
       return null;
     }
 
