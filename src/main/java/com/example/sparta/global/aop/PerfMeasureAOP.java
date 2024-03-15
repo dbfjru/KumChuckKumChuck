@@ -15,14 +15,10 @@ public class PerfMeasureAOP {
   }
 
   @Around("perfPoint()")
-  public void perfMeasureAOP(ProceedingJoinPoint pjp) {
+  public void perfMeasureAOP(ProceedingJoinPoint pjp) throws Throwable{
     long begin = System.currentTimeMillis();
     System.out.println("시간 측정 시작");
-    try {
-      pjp.proceed();
-    } catch (Throwable t) {
-      System.out.println("예외 발생 : " + t.getMessage());
-    }
+    pjp.proceed();
     long time = System.currentTimeMillis() - begin;
     System.out.println("소요시간 : " + time);
   }
