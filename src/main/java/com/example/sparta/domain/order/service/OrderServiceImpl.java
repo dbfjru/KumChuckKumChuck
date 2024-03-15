@@ -5,6 +5,7 @@ import com.example.sparta.domain.order.dto.ModifyOrderRequestDto;
 import com.example.sparta.domain.order.dto.OrderDetailResponseBucket;
 import com.example.sparta.domain.order.dto.OrderResponseDto;
 import com.example.sparta.domain.order.entity.Order;
+import com.example.sparta.domain.order.repository.OrderQueryRepository;
 import com.example.sparta.domain.order.repository.OrderRepository;
 import com.example.sparta.domain.orderdetail.entity.OrderDetail;
 import com.example.sparta.domain.orderdetail.repository.OrderDetailQueryRepository;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderServiceImpl implements OrderService {
 
   private final OrderRepository orderRepository;
+  private final OrderQueryRepository orderQueryRepository;
   private final OrderDetailRepository orderDetailRepository;
   private final OrderDetailQueryRepository orderDetailQueryRepository;
 
@@ -70,7 +72,7 @@ public class OrderServiceImpl implements OrderService {
   @Override
   public List<OrderResponseDto> getOrderList(User user) {
     List<OrderResponseDto> orderResponseDtoList = new ArrayList<>();
-    List<Order> orderList = orderRepository.findByUser(user);
+    List<Order> orderList = orderQueryRepository.findByUser(user);
     if (orderList.isEmpty()) {
       throw new NoSuchElementException("주문내역이 존재하지 않습니다.");
     }
