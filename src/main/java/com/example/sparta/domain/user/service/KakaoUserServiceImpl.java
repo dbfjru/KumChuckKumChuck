@@ -4,6 +4,7 @@ package com.example.sparta.domain.user.service;
 import com.example.sparta.domain.user.dto.KakaoUserInfoDto;
 import com.example.sparta.domain.user.entity.User;
 import com.example.sparta.domain.user.entity.UserRoleEnum;
+import com.example.sparta.domain.user.repository.UserQueryRepository;
 import com.example.sparta.domain.user.repository.UserRepository;
 import com.example.sparta.global.jwt.JwtUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,6 +31,7 @@ public class KakaoUserServiceImpl implements KakaoUserService {
 
   private final PasswordEncoder passwordEncoder;
   private final UserRepository userRepository;
+  private final UserQueryRepository userQueryRepository;
   private final RestTemplate restTemplate;
   private final JwtUtil jwtUtil;
 
@@ -123,11 +125,11 @@ public class KakaoUserServiceImpl implements KakaoUserService {
   private User registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfoDto) {
     // DB에 중복 카카오 ID가 있는지 체크
     Long kakaoId = kakaoUserInfoDto.getId();
-    User kakaoUser = userRepository.findByKakaoId(kakaoId).orElse(null);
+    User kakaoUser = userQueryRepository.findByKakaoId(kakaoId);
 
     if (kakaoUser == null) {// 만약 받아온 kakaoUser 가없으면 ( 회원이아직아님)
       String kakaoEmail = kakaoUserInfoDto.getEmail();
-      User sameEmailUser = userRepository.findByEmail(kakaoEmail).orElse(null);
+      User sameEmailUser = userQueryRepository.findByEmail(kakaoEmail);
 
       if (sameEmailUser != null) {
         kakaoUser = sameEmailUser;

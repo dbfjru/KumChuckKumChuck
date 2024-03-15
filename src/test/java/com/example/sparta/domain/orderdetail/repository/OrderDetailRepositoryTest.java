@@ -13,6 +13,7 @@ import com.example.sparta.domain.store.entity.Store;
 import com.example.sparta.domain.store.repository.StoreRepository;
 import com.example.sparta.domain.user.entity.User;
 import com.example.sparta.domain.user.entity.UserRoleEnum;
+import com.example.sparta.domain.user.repository.UserQueryRepository;
 import com.example.sparta.domain.user.repository.UserRepository;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +30,8 @@ public class OrderDetailRepositoryTest {
     OrderDetailRepository orderDetailRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    UserQueryRepository userQueryRepository;
     @Autowired
     StoreRepository storeRepository;
     @Autowired
@@ -88,7 +91,7 @@ public class OrderDetailRepositoryTest {
     @Test
     void findAllByUserAndOrderNull() {
         // given
-        User findUser = userRepository.findByEmail("user@naver.com").orElse(null);
+        User findUser = userQueryRepository.findByEmail("user@naver.com");
 
         // when
         assert findUser != null;

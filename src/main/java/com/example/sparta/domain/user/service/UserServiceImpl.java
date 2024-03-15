@@ -8,6 +8,7 @@ import com.example.sparta.domain.user.dto.UserProfileUpdateResponseDto;
 import com.example.sparta.domain.user.dto.UserSignupRequestDto;
 import com.example.sparta.domain.user.dto.UserSignupResponseDto;
 import com.example.sparta.domain.user.entity.User;
+import com.example.sparta.domain.user.repository.UserQueryRepository;
 import com.example.sparta.domain.user.repository.UserRepository;
 import com.example.sparta.global.jwt.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,6 +24,7 @@ public class UserServiceImpl implements UserService {
 
   //Repository 주입
   private final UserRepository userRepository;
+  private final UserQueryRepository userQueryRepository;
 
   // 비밀번호 인코더 주입
   private final PasswordEncoder passwordEncoder;
@@ -34,7 +36,7 @@ public class UserServiceImpl implements UserService {
     String email = userSignupRequestDto.getEmail();
 
     // 이미 가입한 유저인지 체크하기
-    if (userRepository.findByEmail(email).isPresent()) {
+    if (userQueryRepository.findByEmail(email) != null) {
       // 만약 DB에 동일한 Email 이 존재하면
       throw new IllegalArgumentException("이미 가입된 email 입니다");
     }
@@ -58,9 +60,10 @@ public class UserServiceImpl implements UserService {
     String email = userLoginRequestDto.getEmail();
     String password = userLoginRequestDto.getPassword();
 
-    User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new IllegalArgumentException("등록된 사용자가 없습니다."));
-
+    User user = userQueryRepository.findByEmail(email);
+    if(user == null){
+      throw new IllegalArgumentException("등록된 사용자가 없습니다.");
+    }
     if (!passwordEncoder.matches(password, user.getPassword())) {
       throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
     }
@@ -79,9 +82,10 @@ public class UserServiceImpl implements UserService {
   public UserProfileUpdateResponseDto userProfileUpdate(
       UserProfileUpdateRequestDto userProfileUpdateRequestDto, User user) {
     String email = user.getEmail();
-    User userUp = userRepository.findByEmail(email)
-        .orElseThrow(() -> new IllegalArgumentException("로그인 유저 정보가 없습니다."));
-
+    User userUp = userQueryRepository.findByEmail(email);
+    if(userUp == null){
+      throw new IllegalArgumentException("로그인 유저 정보가 없습니다.");
+    }
     userUp.userUpdate(userProfileUpdateRequestDto);
     return UserProfileUpdateResponseDto.builder()
         .name(user.getName())
@@ -96,9 +100,10 @@ public class UserServiceImpl implements UserService {
       User user) {
     String email = user.getEmail();
     String password = user.getPassword();
-    User userUp = userRepository.findByEmail(email)
-        .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
-
+    User userUp = userQueryRepository.findByEmail(email);
+    if(userUp ==null) {
+      throw new RuntimeException("로그인 유저 정보가 없습니다.");
+    }
     if (userPasswordUpdateRequestDto.getPassword() == null) {
       throw new IllegalArgumentException("현재 비밀번호를 입력해 주세요");
     }

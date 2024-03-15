@@ -9,6 +9,7 @@ import com.example.sparta.domain.user.dto.UserSignupRequestDto;
 import com.example.sparta.domain.user.dto.UserSignupResponseDto;
 import com.example.sparta.domain.user.entity.User;
 import com.example.sparta.domain.user.entity.UserRoleEnum;
+import com.example.sparta.domain.user.repository.UserQueryRepository;
 import com.example.sparta.domain.user.repository.UserRepository;
 import com.example.sparta.domain.user.service.UserServiceImpl;
 import com.example.sparta.global.jwt.JwtUtil;
@@ -30,6 +31,8 @@ public class UserServiceTest {
   private UserServiceImpl userServiceImpl;
   @Mock
   private UserRepository userRepository;
+  @Mock
+  private UserQueryRepository userQueryRepository;
   @Mock
   private PasswordEncoder passwordEncoder;
   @Mock
@@ -77,8 +80,8 @@ public class UserServiceTest {
         name, password, email, address
     );
     user = new User(name, password, email, address, UserRoleEnum.USER, 1L);
-    given(userRepository.findByEmail(userSignupRequestDto.getEmail())).willReturn(
-        Optional.of(user));
+    given(userQueryRepository.findByEmail(userSignupRequestDto.getEmail())).willReturn(
+        user);
 
     //when
 
@@ -106,7 +109,7 @@ public class UserServiceTest {
         nameUp, addressUp);
     user = new User(name, password, email, address, UserRoleEnum.USER, 1L);
 
-    given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+    given(userQueryRepository.findByEmail(user.getEmail())).willReturn(user);
     //when
     UserProfileUpdateResponseDto response = userServiceImpl.userProfileUpdate(
         userProfileUpdateRequestDto, user);
