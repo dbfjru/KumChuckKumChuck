@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.given;
 
 import com.example.sparta.domain.dibs.dto.DibsResponseDto;
 import com.example.sparta.domain.dibs.entity.Dibs;
+import com.example.sparta.domain.dibs.repository.DibsQueryRepository;
 import com.example.sparta.domain.dibs.repository.DibsRepository;
 import com.example.sparta.domain.dibs.service.DibsServiceImpl;
 import com.example.sparta.domain.store.dto.CreateStoreRequestDto;
@@ -24,6 +25,8 @@ public class DibsServiceImplTest {
 
   @Mock
   DibsRepository mockdibsRepository;
+  @Mock
+  DibsQueryRepository mockdibsQueryRepository;
   @Mock
   StoreRepository mockStoreRepository;
 
@@ -50,7 +53,8 @@ public class DibsServiceImplTest {
     Dibs dibs = new Dibs(user, store);
 
     //when
-    DibsServiceImpl service = new DibsServiceImpl(mockStoreRepository, mockdibsRepository);
+    DibsServiceImpl service = new DibsServiceImpl(mockStoreRepository, mockdibsRepository,
+        mockdibsQueryRepository);
 
     given(mockStoreRepository.findById(1L)).willReturn(Optional.of(store));
 
@@ -81,11 +85,12 @@ public class DibsServiceImplTest {
     //dibs for given
     Dibs dibs = new Dibs(user, store);
     //when
-    DibsServiceImpl service = new DibsServiceImpl(mockStoreRepository, mockdibsRepository);
+    DibsServiceImpl service = new DibsServiceImpl(mockStoreRepository, mockdibsRepository,
+        mockdibsQueryRepository);
 
     given(mockStoreRepository.findById(1L)).willReturn(Optional.of(store));
-    given(mockdibsRepository.findDibsByStoreAndUser(any(), any())).willReturn(
-        Optional.of(dibs));
+    given(mockdibsQueryRepository.findDibsByStoreAndUser(any(), any())).willReturn(
+        dibs);
 
     Long ans = service.deleteDibs(1L, user);
 
