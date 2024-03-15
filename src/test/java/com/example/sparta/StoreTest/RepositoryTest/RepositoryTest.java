@@ -1,13 +1,20 @@
-package com.example.sparta.storeTest.repositoryTest;
+package com.example.sparta.StoreTest.RepositoryTest;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.example.sparta.domain.store.dto.OpeningHoursDto;
 import com.example.sparta.domain.store.dto.StoreRequestDto;
 import com.example.sparta.domain.store.entity.Store;
 import com.example.sparta.domain.store.entity.StoreStatus;
+import com.example.sparta.domain.store.repository.StoreQueryRepository;
 import com.example.sparta.domain.store.repository.StoreRepository;
 import com.example.sparta.domain.user.entity.User;
 import com.example.sparta.domain.user.repository.UserRepository;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,22 +22,21 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE,
-        connection = EmbeddedDatabaseConnection.H2)
+    connection = EmbeddedDatabaseConnection.H2)
 public class RepositoryTest {
-    @Autowired
-    StoreRepository storeRepository;
-    @Autowired
-    UserRepository userRepository;
-    @Test
-    @DisplayName("스토어 테스트")
-    void test1(){
+
+  @Autowired
+  StoreRepository storeRepository;
+  @Autowired
+  StoreQueryRepository storeQueryRepository;
+  @Autowired
+  UserRepository userRepository;
+
+  @Test
+  @DisplayName("스토어 테스트")
+  void test1() {
     //given
     StoreRequestDto requestDto = new StoreRequestDto();
     requestDto.setName("스토어이름");
@@ -48,69 +54,69 @@ public class RepositoryTest {
     user.setEmail("repo@sparta.com");
     //user = userRepository.findById(1L).orElseThrow();
 
-    Store store = new Store(requestDto,user);
+    Store store = new Store(requestDto, user);
     //when
     //create
-        Store save = storeRepository.save(store);
-        assertEquals("스토어이름",save.getName());
+    Store save = storeRepository.save(store);
+    assertEquals("스토어이름", save.getName());
 
     //read
-        List<Store> storeList = storeRepository.findAll();
-         Store save2 = storeList.get(0);
-         assertEquals("스토어이름",save.getName());
+    List<Store> storeList = storeRepository.findAll();
+    Store save2 = storeList.get(0);
+    assertEquals("스토어이름", save.getName());
 
     //update
-        requestDto.setName("업테이트 된 이름");
-        requestDto.setContent("업테이트 된");
-        save2.update(requestDto);
-        assertEquals("업테이트 된 이름",save2.getName());
+    requestDto.setName("업테이트 된 이름");
+    requestDto.setContent("업테이트 된");
+    save2.update(requestDto);
+    assertEquals("업테이트 된 이름", save2.getName());
 
     // search by name
-        try {
-            List<Store> save3 = storeRepository.findAllByNameContains("업테");
-            assertEquals("업테이트 된 이름",save3.get(0).getName());
-        }
-        catch (NoSuchElementException e){
-            fail();
-        }
+    try {
+      List<Store> save3 = storeQueryRepository.findAllByNameContains("업테");
+      assertEquals("업테이트 된 이름", save3.get(0).getName());
+    } catch (NoSuchElementException e) {
+      fail();
+    }
 
     // open / close store
 
-        store = storeRepository.findById(save2.getStoreId()).orElseThrow(()-> new NoSuchElementException("스토어를 찾을수 없음"));
-        store.openStore(true);
+    store = storeRepository.findById(save2.getStoreId())
+        .orElseThrow(() -> new NoSuchElementException("스토어를 찾을수 없음"));
+    store.openStore(true);
 
-        Store store2 = storeRepository.findById(save2.getStoreId()).orElseThrow(()-> new NoSuchElementException("스토어를 찾을수 없음"));
-        assertEquals(StoreStatus.RUNNING,store2.getStatus());
+    Store store2 = storeRepository.findById(save2.getStoreId())
+        .orElseThrow(() -> new NoSuchElementException("스토어를 찾을수 없음"));
+    assertEquals(StoreStatus.RUNNING, store2.getStatus());
 
     //  Opening hours
-        OpeningHoursDto dto = new OpeningHoursDto();
-        dto.setOpening(LocalTime.of(1,1,1));
-        dto.setClosing(LocalTime.of(11,1,1));
-        store = storeRepository.findById(save2.getStoreId()).orElseThrow(()-> new NoSuchElementException("스토어를 찾을수 없음"));
-        store.setOpeningHours(dto);
+    OpeningHoursDto dto = new OpeningHoursDto();
+    dto.setOpening(LocalTime.of(1, 1, 1));
+    dto.setClosing(LocalTime.of(11, 1, 1));
+    store = storeRepository.findById(save2.getStoreId())
+        .orElseThrow(() -> new NoSuchElementException("스토어를 찾을수 없음"));
+    store.setOpeningHours(dto);
 
-        store2 = storeRepository.findById(save2.getStoreId()).orElseThrow(()-> new NoSuchElementException("스토어를 찾을수 없음"));
-        assertEquals(LocalTime.of(11,1,1),store2.getClosingTime());
-
+    store2 = storeRepository.findById(save2.getStoreId())
+        .orElseThrow(() -> new NoSuchElementException("스토어를 찾을수 없음"));
+    assertEquals(LocalTime.of(11, 1, 1), store2.getClosingTime());
 
     // ADMINISTRATOR FORCE CHANGE STORE STATUS!!!
-        store = storeRepository.findById(save2.getStoreId()).orElseThrow(()-> new NoSuchElementException("스토어를 찾을수 없음"));
-        store.updateStatus(5);
+    store = storeRepository.findById(save2.getStoreId())
+        .orElseThrow(() -> new NoSuchElementException("스토어를 찾을수 없음"));
+    store.updateStatus(5);
 
-        store2 = storeRepository.findById(save2.getStoreId()).orElseThrow(()-> new NoSuchElementException("스토어를 찾을수 없음"));
-        assertEquals(StoreStatus.PERMANENT_BANNED,store2.getStatus());
-
-
-
-
+    store2 = storeRepository.findById(save2.getStoreId())
+        .orElseThrow(() -> new NoSuchElementException("스토어를 찾을수 없음"));
+    assertEquals(StoreStatus.PERMANENT_BANNED, store2.getStatus());
 
     //delete
-        storeRepository.delete(save2);
-        /// 해당 dibs 은 지워 졌기 때문에 만약 재 검색을 했을 시에 NoSuchElementException 발동
-        try{
-            storeRepository.findById(1L).orElseThrow(()-> new NoSuchElementException("해당 스토어 없음"));
-        }catch (NoSuchElementException e){
-            assertTrue(true);
-        }
+    storeRepository.delete(save2);
+    /// 해당 dibs 은 지워 졌기 때문에 만약 재 검색을 했을 시에 NoSuchElementException 발동
+    try {
+      storeRepository.findById(1L).orElseThrow(() -> new NoSuchElementException("해당 스토어 없음"));
+    } catch (NoSuchElementException e) {
+      assertTrue(true);
     }
+  }
 }

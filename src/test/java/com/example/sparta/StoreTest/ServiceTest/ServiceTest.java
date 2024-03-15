@@ -1,4 +1,4 @@
-package com.example.sparta.storeTest.serviceTest;
+package com.example.sparta.StoreTest.ServiceTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -9,6 +9,7 @@ import com.example.sparta.domain.store.dto.OpeningHoursDto;
 import com.example.sparta.domain.store.dto.StoreRequestDto;
 import com.example.sparta.domain.store.dto.StoreResponseDto;
 import com.example.sparta.domain.store.entity.Store;
+import com.example.sparta.domain.store.repository.StoreQueryRepository;
 import com.example.sparta.domain.store.repository.StoreRepository;
 import com.example.sparta.domain.store.service.StoreServiceImpl;
 import com.example.sparta.domain.user.entity.User;
@@ -29,6 +30,8 @@ public class ServiceTest {
 
   @Mock
   StoreRepository mockStoreRepository;
+  @Mock
+  StoreQueryRepository mockStoreQueryRepository;
 
   @Test
   @DisplayName("스토어 생성")
@@ -51,7 +54,8 @@ public class ServiceTest {
     Store store = new Store(requestDto, user);
 
     //service
-    StoreServiceImpl storeServiceImpl = new StoreServiceImpl(mockStoreRepository);
+    StoreServiceImpl storeServiceImpl = new StoreServiceImpl(mockStoreRepository,
+        mockStoreQueryRepository);
 
     // when
     given(mockStoreRepository.save(any())).willReturn(store);
@@ -83,7 +87,8 @@ public class ServiceTest {
     }
 
     //service
-    StoreServiceImpl storeServiceImpl = new StoreServiceImpl(mockStoreRepository);
+    StoreServiceImpl storeServiceImpl = new StoreServiceImpl(mockStoreRepository,
+        mockStoreQueryRepository);
 
     // when
     given(mockStoreRepository.findAll()).willReturn(ls);
@@ -116,7 +121,8 @@ public class ServiceTest {
     Store score = new Store(requestDto, user);
 
     //service
-    StoreServiceImpl storeServiceImpl = new StoreServiceImpl(mockStoreRepository);
+    StoreServiceImpl storeServiceImpl = new StoreServiceImpl(mockStoreRepository,
+        mockStoreQueryRepository);
 
     // when
     given(mockStoreRepository.findById(1L)).willReturn(Optional.of(score));
@@ -144,7 +150,8 @@ public class ServiceTest {
     //score
     Store score = new Store(requestDto, user);
     //service
-    StoreServiceImpl storeServiceImpl = new StoreServiceImpl(mockStoreRepository);
+    StoreServiceImpl storeServiceImpl = new StoreServiceImpl(mockStoreRepository,
+        mockStoreQueryRepository);
 
     // when
     given(mockStoreRepository.findById(1L)).willReturn(Optional.of(score));
@@ -175,7 +182,8 @@ public class ServiceTest {
     Store score = new Store(requestDto, user);
 
     //service
-    StoreServiceImpl storeServiceImpl = new StoreServiceImpl(mockStoreRepository);
+    StoreServiceImpl storeServiceImpl = new StoreServiceImpl(mockStoreRepository,
+        mockStoreQueryRepository);
 
     // when
     given(mockStoreRepository.findById(1L)).willReturn(Optional.of(score));
@@ -212,10 +220,11 @@ public class ServiceTest {
     }
 
     //service
-    StoreServiceImpl storeServiceImpl = new StoreServiceImpl(mockStoreRepository);
+    StoreServiceImpl storeServiceImpl = new StoreServiceImpl(mockStoreRepository,
+        mockStoreQueryRepository);
 
     // when
-    given(mockStoreRepository.findAllByNameContains("new name")).willReturn(ls);
+    given(mockStoreQueryRepository.findAllByNameContains("new name")).willReturn(ls);
     List<StoreResponseDto> storeResponseDtoLs = storeServiceImpl.getAllStoreByName("new name");
     //then
     assertEquals(storeResponseDtoLs.get(1).getName(), ls.get(1).getName());
@@ -237,7 +246,8 @@ public class ServiceTest {
     user.setName("스탄이");
 
     //service
-    StoreServiceImpl storeServiceImpl = new StoreServiceImpl(mockStoreRepository);
+    StoreServiceImpl storeServiceImpl = new StoreServiceImpl(mockStoreRepository,
+        mockStoreQueryRepository);
 
     //score
     Store score = new Store(requestDto, user);
@@ -270,7 +280,8 @@ public class ServiceTest {
     dto.setOpening(LocalTime.now());
     dto.setClosing(LocalTime.MIDNIGHT);
     //service
-    StoreServiceImpl storeServiceImpl = new StoreServiceImpl(mockStoreRepository);
+    StoreServiceImpl storeServiceImpl = new StoreServiceImpl(mockStoreRepository,
+        mockStoreQueryRepository);
 
     //score
     Store score = new Store(requestDto, user);
@@ -300,7 +311,8 @@ public class ServiceTest {
     dto.setOpening(LocalTime.now());
     dto.setClosing(LocalTime.MIDNIGHT);
     //service
-    StoreServiceImpl storeServiceImpl = new StoreServiceImpl(mockStoreRepository);
+    StoreServiceImpl storeServiceImpl = new StoreServiceImpl(mockStoreRepository,
+        mockStoreQueryRepository);
 
     //score
     Store store = new Store(requestDto, user);

@@ -5,6 +5,7 @@ import com.example.sparta.domain.store.dto.OpeningHoursDto;
 import com.example.sparta.domain.store.dto.StoreRequestDto;
 import com.example.sparta.domain.store.dto.StoreResponseDto;
 import com.example.sparta.domain.store.entity.Store;
+import com.example.sparta.domain.store.repository.StoreQueryRepository;
 import com.example.sparta.domain.store.repository.StoreRepository;
 import com.example.sparta.domain.user.entity.User;
 import com.example.sparta.domain.user.entity.UserRoleEnum;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class StoreServiceImpl implements StoreService {
 
   private final StoreRepository storeRepository;
+  private final StoreQueryRepository storeQueryRepository;
 
   @Override
   public StoreResponseDto createStore(CreateStoreRequestDto requestDto, User user) {
@@ -76,7 +78,7 @@ public class StoreServiceImpl implements StoreService {
 
   @Override
   public List<StoreResponseDto> getAllStoreByName(String name) {
-    List<Store> stores = storeRepository.findAllByNameContains(name);
+    List<Store> stores = storeQueryRepository.findAllByNameContains(name);
     List<StoreResponseDto> responseDtoList = new ArrayList<>();
     for (Store store : stores) {
       responseDtoList.add(new StoreResponseDto(store));
