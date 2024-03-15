@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
   //Repository 주입
   private final UserRepository userRepository;
   private final UserQueryRepository userQueryRepository;
-
+  
   // 비밀번호 인코더 주입
   private final PasswordEncoder passwordEncoder;
 
@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
     String password = userLoginRequestDto.getPassword();
 
     User user = userQueryRepository.findByEmail(email);
-    if(user == null){
+    if (user == null) {
       throw new IllegalArgumentException("등록된 사용자가 없습니다.");
     }
     if (!passwordEncoder.matches(password, user.getPassword())) {
@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
       UserProfileUpdateRequestDto userProfileUpdateRequestDto, User user) {
     String email = user.getEmail();
     User userUp = userQueryRepository.findByEmail(email);
-    if(userUp == null){
+    if (userUp == null) {
       throw new IllegalArgumentException("로그인 유저 정보가 없습니다.");
     }
     userUp.userUpdate(userProfileUpdateRequestDto);
@@ -101,7 +101,7 @@ public class UserServiceImpl implements UserService {
     String email = user.getEmail();
     String password = user.getPassword();
     User userUp = userQueryRepository.findByEmail(email);
-    if(userUp ==null) {
+    if (userUp == null) {
       throw new RuntimeException("로그인 유저 정보가 없습니다.");
     }
     if (userPasswordUpdateRequestDto.getPassword() == null) {
