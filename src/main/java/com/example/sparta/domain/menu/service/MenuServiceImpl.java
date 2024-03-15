@@ -4,6 +4,7 @@ import com.example.sparta.domain.menu.dto.AddMenuRequestDto;
 import com.example.sparta.domain.menu.dto.AddMenuResponseDto;
 import com.example.sparta.domain.menu.dto.GetMenuResponseDto;
 import com.example.sparta.domain.menu.entity.Menu;
+import com.example.sparta.domain.menu.repository.MenuQueryRepository;
 import com.example.sparta.domain.menu.repository.MenuRepository;
 import com.example.sparta.domain.store.entity.Store;
 import com.example.sparta.domain.store.repository.StoreRepository;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class MenuServiceImpl implements MenuService {
 
   private final MenuRepository menuRepository;
+  private final MenuQueryRepository menuQueryRepository;
   private final StoreRepository storeRepository;
 
   @Override
@@ -40,7 +42,7 @@ public class MenuServiceImpl implements MenuService {
         () -> new NoSuchElementException("해당 가게를 찾을 수 없습니다.")
     );
 
-    if (menuRepository.findByMenuNameAndStore(requestDto.getMenuName(), store).isPresent()) {
+    if (menuQueryRepository.findByMenuNameAndStore(requestDto.getMenuName(), store) != null) {
       throw new IllegalArgumentException("해당 가게에서 메뉴 이름이 이미 존재합니다.");
     }
 
